@@ -1,0 +1,434 @@
+// getIt — data model
+// Money is always stored in minor units (paise). Media URLs point at R2.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+enum Role {
+  USER
+  SELLER
+  ADMIN
+}
+
+enum KycStatus {
+  PENDING
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum LikeTarget {
+  POST
+  REEL
+}
+
+enum OrderStatus {
+  CREATED
+  PAYMENT_PENDING
+  PAID
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum ItemSource {
+  DIRECT
+  POST
+  REEL
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum ShipmentStatus {
+  PENDING
+  PICKUP_SCHEDULED
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  RTO
+  CANCELLED
+}
+
+enum CashbackStatus {
+  PENDING
+  CREDITED
+  REVERSED
+}
+
+enum NotificationType {
+  ORDER
+  SHIPMENT
+  CASHBACK
+  SOCIAL
+  SYSTEM
+}
+
+enum OtpPurpose {
+  LOGIN
+}
+
+// ---------------------------------------------------------------------------
+// Identity
+// ---------------------------------------------------------------------------
+model User {
+  id          String   @id @default(cuid())
+  phone       String   @unique
+  username    String   @unique
+  displayName String
+  avatarUrl   String?
+  bio         String?
+  verified    Boolean  @default(false)
+  role        Role     @default(USER)
+  // Cashback wallet balance in paise.
+  cashbackPaise Int    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  seller         Seller?
+  products       Product[]        @relation("SellerProducts")
+  posts          Post[]
+  reels          Reel[]
+  stories        Story[]
+  likes          Like[]
+  reviews        Review[]
+  addresses      Address[]
+  cartItems      CartItem[]
+  orders         Order[]
+  notifications  Notification[]
+  cashbackEarned CashbackEntry[]  @relation("CashbackBeneficiary")
+  following      Follow[]         @relation("Follower")
+  followers      Follow[]         @relation("Following")
+
+  @@index([role])
+}
+
+model Seller {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName  String
+  gstin         String?
+  panNumber     String?
+  // Settlement bank details
+  bankAccountName   String?
+  bankAccountNumber String?
+  bankIfsc          String?
+  // KYC document URLs (R2)
+  kycDocUrls    String[]  @default([])
+  kycStatus     KycStatus @default(PENDING)
+  approvedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([kycStatus])
+}
+
+model Follow {
+  followerId  String
+  followingId String
+  follower    User     @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@id([followerId, followingId])
+  @@index([followingId])
+}
+
+// ---------------------------------------------------------------------------
+// Catalog
+// ---------------------------------------------------------------------------
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  emoji    String
+  products Product[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  sellerId    String
+  seller      User     @relation("SellerProducts", fields: [sellerId], references: [id])
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  title       String
+  slug        String   @unique
+  description String?
+  pricePaise  Int
+  mrpPaise    Int?
+  imageUrls   String[] @default([])
+  stock       Int      @default(0)
+  rating      Float    @default(0)
+  ratingCount Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reels      Reel[]
+  posts      Post[]
+  orderItems OrderItem[]
+  cartItems  CartItem[]
+  reviews    Review[]
+
+  @@index([categoryId])
+  @@index([sellerId])
+}
+
+// ---------------------------------------------------------------------------
+// Social content
+// ---------------------------------------------------------------------------
+model Story {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mediaUrl  String
+  mediaType MediaType @default(IMAGE)
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Post {
+  id              String   @id @default(cuid())
+  authorId        String
+  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  imageUrls       String[] @default([])
+  caption         String
+  taggedProductId String?
+  taggedProduct   Product? @relation(fields: [taggedProductId], references: [id])
+  likeCount       Int      @default(0)
+  commentCount    Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  likes Like[]
+
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model Reel {
+  id           String   @id @default(cuid())
+  authorId     String
+  author       User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id])
+  videoUrl     String
+  posterUrl    String?
+  caption      String
+  durationSec  Int?
+  likeCount    Int      @default(0)
+  commentCount Int      @default(0)
+  shareCount   Int      @default(0)
+  reviewCount  Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  likes Like[]
+
+  @@index([authorId])
+  @@index([productId])
+  @@index([createdAt])
+}
+
+model Like {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  target    LikeTarget
+  postId    String?
+  post      Post?      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reelId    String?
+  reel      Reel?      @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+
+  @@unique([userId, postId])
+  @@unique([userId, reelId])
+}
+
+// ---------------------------------------------------------------------------
+// Commerce
+// ---------------------------------------------------------------------------
+model Address {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String
+  line1     String
+  line2     String?
+  city      String
+  state     String
+  pincode   String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  orders Order[]
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  qty       Int      @default(1)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  status        OrderStatus @default(CREATED)
+  subtotalPaise Int
+  shippingPaise Int         @default(0)
+  discountPaise Int         @default(0)
+  totalPaise    Int
+  addressId     String?
+  address       Address?    @relation(fields: [addressId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  items          OrderItem[]
+  payment        Payment?
+  shipment       Shipment?
+  cashbackEntries CashbackEntry[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id             String     @id @default(cuid())
+  orderId        String
+  order          Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product    @relation(fields: [productId], references: [id])
+  sellerId       String
+  qty            Int
+  unitPricePaise Int
+  // Attribution: did this purchase come from a post/reel (cashback-eligible)?
+  source         ItemSource @default(DIRECT)
+  sourcePostId   String?
+  sourceReelId   String?
+
+  cashbackEntries CashbackEntry[]
+
+  @@index([orderId])
+  @@index([sellerId])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  orderId           String        @unique
+  order             Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider          String        @default("PAYU")
+  providerPaymentId String?
+  status            PaymentStatus @default(INITIATED)
+  amountPaise       Int
+  raw               Json?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model Shipment {
+  id          String         @id @default(cuid())
+  orderId     String         @unique
+  order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider    String         @default("SHIPROCKET")
+  awb         String?
+  courier     String?
+  status      ShipmentStatus @default(PENDING)
+  trackingUrl String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  rating    Int
+  body      String?
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([productId])
+}
+
+model CashbackEntry {
+  id          String         @id @default(cuid())
+  // Beneficiary = the creator whose post/reel drove the purchase.
+  userId      String
+  user        User           @relation("CashbackBeneficiary", fields: [userId], references: [id])
+  orderId     String
+  order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItemId String?
+  orderItem   OrderItem?     @relation(fields: [orderItemId], references: [id])
+  amountPaise Int
+  rate        Float          @default(0.05)
+  status      CashbackStatus @default(PENDING)
+  reason      String?
+  createdAt   DateTime       @default(now())
+
+  @@index([userId])
+  @@index([orderId])
+}
+
+// ---------------------------------------------------------------------------
+// Notifications & auth
+// ---------------------------------------------------------------------------
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  body      String
+  data      Json?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, readAt])
+}
+
+model OtpToken {
+  id         String     @id @default(cuid())
+  phone      String
+  codeHash   String
+  purpose    OtpPurpose @default(LOGIN)
+  attempts   Int        @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime   @default(now())
+
+  @@index([phone, purpose])
+}

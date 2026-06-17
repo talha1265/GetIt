@@ -1,7 +1,8 @@
 import { ReelCard } from "@/components/reels/ReelCard";
-import { reels } from "@/lib/mock/data";
+import { getReels } from "@/lib/data/feed";
 
-export default function ReelsPage() {
+export default async function ReelsPage() {
+  const reels = await getReels();
   return (
     <div className="snap-y-feed no-scrollbar h-full overflow-y-auto bg-black">
       {reels.map((reel) => (

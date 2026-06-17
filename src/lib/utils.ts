@@ -48,6 +48,19 @@ export function seededGradient(seed: string): string {
   return `linear-gradient(135deg, ${a} 0%, ${b} 52%, ${c} 100%)`;
 }
 
+/** Short relative time label: "3h", "2d", "5m", "now". */
+export function relativeTime(date: Date | string): string {
+  const then = typeof date === "string" ? new Date(date) : date;
+  const diff = Date.now() - then.getTime();
+  const m = Math.floor(diff / 60_000);
+  if (m < 1) return "now";
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  const d = Math.floor(h / 24);
+  return d < 7 ? `${d}d` : `${Math.floor(d / 7)}w`;
+}
+
 /** Two uppercase initials from a display name. */
 export function initials(name: string): string {
   const parts = name.trim().split(/\s+/);

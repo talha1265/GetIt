@@ -6,15 +6,25 @@ import { CashbackPrompt } from "@/components/feed/CashbackPrompt";
 import { PostCard } from "@/components/feed/PostCard";
 import { ReelsRail } from "@/components/feed/ReelsRail";
 import {
-  banners,
-  categories,
-  posts,
-  reels,
-  socialBuys,
-  stories,
-} from "@/lib/mock/data";
+  getBanners,
+  getCategories,
+  getPosts,
+  getReels,
+  getSocialBuys,
+  getStories,
+} from "@/lib/data/feed";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [stories, categories, banners, socialBuys, posts, reels] =
+    await Promise.all([
+      getStories(),
+      getCategories(),
+      getBanners(),
+      getSocialBuys(),
+      getPosts(),
+      getReels(),
+    ]);
+
   return (
     <div className="pb-4">
       <StoriesBar stories={stories} />
@@ -22,7 +32,7 @@ export default function HomePage() {
       <AdsHero banners={banners} />
       <SocialBuysFeed buys={socialBuys} />
       <CashbackPrompt />
-      <PostCard post={posts[0]} />
+      {posts[0] && <PostCard post={posts[0]} />}
       <ReelsRail reels={reels} />
       {posts.slice(1).map((post) => (
         <PostCard key={post.id} post={post} />
