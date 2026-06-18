@@ -17,7 +17,7 @@
   --primary: #111114; /* premium near-black primary actions */
   --primary-foreground: #ffffff;
 
-  --accent: #7c3aed; /* violet — highlights, active states */
+  --accent: #0d9488; /* getIt teal — highlights, active states, links */
   --accent-foreground: #ffffff;
 
   --buy: #111114;
@@ -28,13 +28,13 @@
   --danger: #e11d48;
   --like: #ff2d55;
 
+  /* getIt "aurora" brand gradient — teal → blue → indigo (distinct from IG) */
   --ring-gradient: linear-gradient(
     135deg,
-    #feda77 0%,
-    #f58529 25%,
-    #dd2a7b 55%,
-    #8134af 80%,
-    #515bd4 100%
+    #2dd4bf 0%,
+    #22d3ee 30%,
+    #3b82f6 65%,
+    #6366f1 100%
   );
 
   --radius-sm: 0.625rem;

@@ -32,9 +32,16 @@ function Action({
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center gap-1 text-white transition active:scale-90"
+      className="flex flex-col items-center gap-1.5 text-white transition active:scale-90"
     >
-      <span className={cn(active && "text-like")}>{icon}</span>
+      <span
+        className={cn(
+          "flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/10 backdrop-blur-md",
+          active && "text-like",
+        )}
+      >
+        {icon}
+      </span>
       <span className="text-[11px] font-semibold drop-shadow">{label}</span>
     </button>
   );
@@ -61,7 +68,7 @@ export function ReelCard({ reel }: { reel: Reel }) {
         <Action
           icon={
             <Heart
-              className="h-8 w-8"
+              className="h-6 w-6"
               fill={liked ? "currentColor" : "none"}
               strokeWidth={1.8}
             />
@@ -71,19 +78,19 @@ export function ReelCard({ reel }: { reel: Reel }) {
           onClick={() => setLiked((v) => !v)}
         />
         <Action
-          icon={<MessageCircle className="h-8 w-8 -scale-x-100" strokeWidth={1.8} />}
+          icon={<MessageCircle className="h-6 w-6 -scale-x-100" strokeWidth={1.8} />}
           label={formatCount(reel.comments)}
         />
         <Action
-          icon={<Star className="h-8 w-8" strokeWidth={1.8} />}
+          icon={<Star className="h-6 w-6" strokeWidth={1.8} />}
           label={formatCount(reel.reviewCount)}
         />
         <Action
-          icon={<Send className="h-8 w-8" strokeWidth={1.8} />}
+          icon={<Send className="h-6 w-6" strokeWidth={1.8} />}
           label={formatCount(reel.shares)}
         />
-        <button className="text-white">
-          <MoreVertical className="h-7 w-7" strokeWidth={1.8} />
+        <button className="flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white backdrop-blur-md">
+          <MoreVertical className="h-6 w-6" strokeWidth={1.8} />
         </button>
       </div>
 

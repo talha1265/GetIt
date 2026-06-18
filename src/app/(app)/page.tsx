@@ -27,11 +27,16 @@ export default async function HomePage() {
 
   return (
     <div className="pb-4">
-      <StoriesBar stories={stories} />
-      <CategoryStrip categories={categories} />
+      {/* Branded discovery header panel */}
+      <div className="overflow-hidden rounded-b-3xl bg-surface pb-1 shadow-[var(--shadow-card)]">
+        <StoriesBar stories={stories} />
+        <CategoryStrip categories={categories} />
+      </div>
+
       <AdsHero banners={banners} />
       <SocialBuysFeed buys={socialBuys} />
       <CashbackPrompt />
+
       {posts[0] && <PostCard post={posts[0]} />}
       <ReelsRail reels={reels} />
       {posts.slice(1).map((post) => (

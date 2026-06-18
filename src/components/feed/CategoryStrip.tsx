@@ -2,7 +2,7 @@ import type { Category } from "@/lib/types";
 
 export function CategoryStrip({ categories }: { categories: Category[] }) {
   return (
-    <section className="border-b border-border py-3">
+    <section className="py-3">
       <div className="no-scrollbar flex gap-3 overflow-x-auto px-4">
         {categories.map((c) => (
           <button

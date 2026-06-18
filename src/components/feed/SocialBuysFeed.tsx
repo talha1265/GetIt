@@ -6,7 +6,7 @@ import type { SocialBuy } from "@/lib/types";
 
 export function SocialBuysFeed({ buys }: { buys: SocialBuy[] }) {
   return (
-    <section className="border-b border-border py-3">
+    <section className="py-3">
       <div className="flex items-center justify-between px-4 pb-2.5">
         <h2 className="text-sm font-bold">Bought by people you follow</h2>
         <button className="text-xs font-semibold text-accent">See all</button>

@@ -22,9 +22,9 @@ export function PostCard({ post }: { post: Post }) {
   const likeCount = post.likes + (liked && !post.liked ? 1 : 0) - (!liked && post.liked ? 1 : 0);
 
   return (
-    <article className="border-b border-border pb-3">
+    <article className="mx-3 mb-3 overflow-hidden rounded-3xl border border-border bg-surface pb-3 shadow-[var(--shadow-card)]">
       {/* header */}
-      <div className="flex items-center gap-2.5 px-4 py-2.5">
+      <div className="flex items-center gap-2.5 px-4 py-3">
         <Avatar user={post.author} size="md" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1">
@@ -45,15 +45,15 @@ export function PostCard({ post }: { post: Post }) {
       </div>
 
       {/* media */}
-      <div className="relative">
+      <div className="relative px-3">
         <Media
           seed={post.id}
           label={post.caption}
-          rounded="rounded-none"
+          rounded="rounded-2xl"
           className="aspect-square w-full"
         />
         {post.taggedProduct && (
-          <Badge tone="dark" className="absolute bottom-3 left-3 bg-black/55 backdrop-blur">
+          <Badge tone="dark" className="absolute bottom-3 left-6 bg-black/55 backdrop-blur">
             🛍 Shoppable
           </Badge>
         )}
