@@ -19,10 +19,31 @@ export async function POST(req: Request) {
   if (!userId) {
     return NextResponse.json({ ok: false, error: "Sign in to post." }, { status: 401 });
   }
+
+  // Reels are seller-only content.
+  const sessionRole = session?.user?.role;
+  if (sessionRole !== "SELLER" && sessionRole !== "ADMIN") {
+    return NextResponse.json(
+      { ok: false, error: "Only sellers can upload reels." },
+      { status: 403 },
+    );
+  }
   if (!hasDatabase) {
     return NextResponse.json(
       { ok: false, error: "Posting is not available until a database is connected." },
       { status: 503 },
+    );
+  }
+
+  // Authoritative role check against the DB.
+  const account = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+  if (!account || (account.role !== "SELLER" && account.role !== "ADMIN")) {
+    return NextResponse.json(
+      { ok: false, error: "Only sellers can upload reels." },
+      { status: 403 },
     );
   }
 

@@ -9,6 +9,7 @@ import {
   Film,
   Loader2,
   Sparkles,
+  Store,
   UploadCloud,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -32,7 +33,9 @@ function formatBytes(n: number): string {
 
 export default function CreateReelPage() {
   const router = useRouter();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
+  const role = session?.user?.role;
+  const isSeller = role === "SELLER" || role === "ADMIN";
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [phase, setPhase] = useState<Phase>("idle");
@@ -100,6 +103,31 @@ export default function CreateReelPage() {
         <Link href="/login">
           <Button variant="primary" size="lg">Sign in</Button>
         </Link>
+      </div>
+    );
+  }
+
+  if (status === "authenticated" && !isSeller) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-4 px-8 text-center">
+        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-muted">
+          <Store className="h-8 w-8 text-muted" strokeWidth={1.5} />
+        </span>
+        <div>
+          <h2 className="text-lg font-bold">Reels are for sellers</h2>
+          <p className="mt-1 text-sm text-muted">
+            Product reels can only be uploaded from a seller account. Set up
+            your shop to start posting reels.
+          </p>
+        </div>
+        <Link href="/profile">
+          <Button variant="primary" size="lg">
+            <Store className="h-4 w-4" /> Become a seller
+          </Button>
+        </Link>
+        <p className="text-xs text-muted">
+          Want to share a buy instead? Create a post and earn 5% cashback.
+        </p>
       </div>
     );
   }
