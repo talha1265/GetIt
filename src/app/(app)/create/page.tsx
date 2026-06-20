@@ -14,7 +14,7 @@ const options = [
     icon: ImagePlus,
     title: "New post",
     desc: "Share a photo, tag a product, earn 5% cashback",
-    href: undefined as string | undefined,
+    href: "/create/post" as string | undefined,
     sellerOnly: false,
   },
   {

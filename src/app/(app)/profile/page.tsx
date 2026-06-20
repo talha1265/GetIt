@@ -4,6 +4,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Media } from "@/components/ui/Media";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { LocalPostTiles } from "@/components/feed/LocalPosts";
 import { users, posts, reels } from "@/lib/mock/data";
 import { formatPrice } from "@/lib/utils";
 
@@ -68,6 +69,8 @@ export default function ProfilePage() {
         <Grid3x3 className="h-5 w-5" />
         <Badge tone="neutral">Posts &amp; Reels</Badge>
       </div>
+
+      <LocalPostTiles />
 
       <div className="grid grid-cols-3 gap-0.5 p-0.5">
         {tiles.map((t) => (

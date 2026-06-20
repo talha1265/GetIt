@@ -4,6 +4,7 @@ import { AdsHero } from "@/components/feed/AdsHero";
 import { SocialBuysFeed } from "@/components/feed/SocialBuysFeed";
 import { CashbackPrompt } from "@/components/feed/CashbackPrompt";
 import { PostCard } from "@/components/feed/PostCard";
+import { LocalPostsFeed } from "@/components/feed/LocalPosts";
 import { ReelsRail } from "@/components/feed/ReelsRail";
 import {
   getBanners,
@@ -37,6 +38,7 @@ export default async function HomePage() {
       <SocialBuysFeed buys={socialBuys} />
       <CashbackPrompt />
 
+      <LocalPostsFeed />
       {posts[0] && <PostCard post={posts[0]} />}
       <ReelsRail reels={reels} />
       {posts.slice(1).map((post) => (
