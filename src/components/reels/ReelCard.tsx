@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   Heart,
   MessageCircle,
@@ -165,21 +166,26 @@ export function ReelCard({ reel }: { reel: Reel }) {
 
         {/* shoppable product bar with Add to cart + Buy */}
         <div className="flex items-center gap-3 rounded-2xl bg-white/12 p-2.5 backdrop-blur-md">
-          <Media
-            seed={reel.product.id}
-            src={reel.product.imageUrl}
-            label={reel.product.title}
-            className="h-12 w-12 shrink-0"
-            rounded="rounded-[0.75rem]"
-          />
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-semibold">{reel.product.title}</p>
-            <Price
-              pricePaise={reel.product.pricePaise}
-              size="sm"
-              className="[&>span:first-child]:text-white"
+          <Link
+            href={`/product/${reel.product.id}`}
+            className="flex min-w-0 flex-1 items-center gap-3"
+          >
+            <Media
+              seed={reel.product.id}
+              src={reel.product.imageUrl}
+              label={reel.product.title}
+              className="h-12 w-12 shrink-0"
+              rounded="rounded-[0.75rem]"
             />
-          </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-semibold">{reel.product.title}</p>
+              <Price
+                pricePaise={reel.product.pricePaise}
+                size="sm"
+                className="[&>span:first-child]:text-white"
+              />
+            </div>
+          </Link>
           <div className="flex shrink-0 items-center gap-2">
             <AddToCartButton
               product={reel.product}

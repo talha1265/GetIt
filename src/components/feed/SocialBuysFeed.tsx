@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Avatar } from "@/components/ui/Avatar";
 import { Media } from "@/components/ui/Media";
 import { Price } from "@/components/ui/Price";
@@ -17,7 +18,7 @@ export function SocialBuysFeed({ buys }: { buys: SocialBuy[] }) {
             key={buy.id}
             className="w-[180px] shrink-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-card)]"
           >
-            <div className="relative">
+            <Link href={`/product/${buy.product.id}`} className="relative block">
               <Media
                 seed={buy.product.id}
                 src={buy.product.imageUrl}
@@ -31,11 +32,13 @@ export function SocialBuysFeed({ buys }: { buys: SocialBuy[] }) {
                   {buy.buyer.displayName.split(" ")[0]} bought
                 </span>
               </div>
-            </div>
+            </Link>
             <div className="space-y-2 p-2.5">
-              <p className="line-clamp-2 text-xs font-medium leading-snug">
-                {buy.product.title}
-              </p>
+              <Link href={`/product/${buy.product.id}`} className="block">
+                <p className="line-clamp-2 text-xs font-medium leading-snug">
+                  {buy.product.title}
+                </p>
+              </Link>
               <Price
                 pricePaise={buy.product.pricePaise}
                 mrpPaise={buy.product.mrpPaise}

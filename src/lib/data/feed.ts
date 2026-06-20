@@ -70,7 +70,7 @@ type DbProduct = {
   seller: DbUser;
 };
 
-function mapProduct(p: DbProduct): Product {
+export function mapProduct(p: DbProduct): Product {
   return {
     id: p.id,
     title: p.title,

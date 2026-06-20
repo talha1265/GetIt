@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Star } from "lucide-react";
 import { Media } from "@/components/ui/Media";
 import { Price } from "@/components/ui/Price";
@@ -9,15 +10,19 @@ import { formatCount } from "@/lib/utils";
 export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-card)]">
-      <Media
-        seed={product.id}
-        src={product.imageUrl}
-        label={product.title}
-        rounded="rounded-none"
-        className="aspect-square w-full"
-      />
+      <Link href={`/product/${product.id}`}>
+        <Media
+          seed={product.id}
+          src={product.imageUrl}
+          label={product.title}
+          rounded="rounded-none"
+          className="aspect-square w-full"
+        />
+      </Link>
       <div className="space-y-1.5 p-2.5">
-        <p className="line-clamp-2 text-xs font-medium leading-snug">{product.title}</p>
+        <Link href={`/product/${product.id}`} className="block">
+          <p className="line-clamp-2 text-xs font-medium leading-snug">{product.title}</p>
+        </Link>
         <div className="flex items-center gap-1 text-[11px] text-muted">
           <Star className="h-3 w-3 fill-current text-amber-400" />
           {product.rating} · {formatCount(product.ratingCount)}

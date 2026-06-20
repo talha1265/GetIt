@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Bookmark,
   Heart,
@@ -107,6 +108,10 @@ export function PostCard({ post }: { post: Post }) {
       {/* tagged product shopping row */}
       {post.taggedProduct && (
         <div className="mx-4 mt-3 flex items-center gap-3 rounded-2xl border border-border bg-surface-muted p-2.5">
+          <Link
+            href={`/product/${post.taggedProduct.id}`}
+            className="flex min-w-0 flex-1 items-center gap-3"
+          >
           <Media
             seed={post.taggedProduct.id}
             src={post.taggedProduct.imageUrl}
@@ -127,6 +132,7 @@ export function PostCard({ post }: { post: Post }) {
               5% cashback to {post.author.username}
             </p>
           </div>
+          </Link>
           <AddToCartButton
             product={post.taggedProduct}
             source="POST"
