@@ -14,9 +14,6 @@
     "db:studio": "prisma studio",
     "make:seller": "node --env-file=.env --import tsx scripts/make-seller.ts"
   },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1071.0",
     "@aws-sdk/s3-request-presigner": "^3.1071.0",
