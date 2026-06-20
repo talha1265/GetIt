@@ -1,5 +1,5 @@
 import "server-only";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, HeadBucketCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomUUID } from "node:crypto";
 
@@ -53,6 +53,17 @@ export function buildKey(kind: UploadKind, userId: string, contentType: string):
 
 export function publicUrl(key: string): string {
   return `${PUBLIC_BASE_URL!.replace(/\/$/, "")}/${key}`;
+}
+
+/** Verify the R2 bucket is reachable with the configured credentials. */
+export async function checkR2(): Promise<{ ok: boolean; error?: string }> {
+  if (!hasR2) return { ok: false, error: "R2 env vars not set" };
+  try {
+    await getClient().send(new HeadBucketCommand({ Bucket: BUCKET! }));
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
 }
 
 /** Presigned PUT URL (valid 10 min) plus the eventual public GET URL. */
