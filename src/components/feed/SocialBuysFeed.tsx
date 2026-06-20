@@ -20,6 +20,7 @@ export function SocialBuysFeed({ buys }: { buys: SocialBuy[] }) {
             <div className="relative">
               <Media
                 seed={buy.product.id}
+                src={buy.product.imageUrl}
                 label={buy.product.title}
                 rounded="rounded-none"
                 className="h-[120px] w-full"

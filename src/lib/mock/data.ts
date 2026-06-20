@@ -301,4 +301,26 @@ export const reels: Reel[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Real placeholder media so the app looks/plays like a real product, not a
+// wireframe. Images: picsum (seeded, stable). Reel videos: Google's public
+// sample bucket. Swapped for R2-hosted media once real uploads land.
+// ---------------------------------------------------------------------------
+const SAMPLE_VIDEOS = [
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+];
+
+const pic = (seed: string, w: number, h: number) =>
+  `https://picsum.photos/seed/${seed}/${w}/${h}`;
+
+for (const p of products) p.imageUrl = pic(p.id, 600, 600);
+for (const post of posts) post.imageUrl = pic(post.id, 900, 900);
+reels.forEach((r, i) => {
+  r.posterUrl = pic(r.id, 600, 1066);
+  r.videoUrl = SAMPLE_VIDEOS[i % SAMPLE_VIDEOS.length];
+});
+
 export { productById };

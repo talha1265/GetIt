@@ -71,7 +71,13 @@ export default function ProfilePage() {
 
       <div className="grid grid-cols-3 gap-0.5 p-0.5">
         {tiles.map((t) => (
-          <Media key={t.id} seed={t.id} rounded="rounded-none" className="aspect-square" />
+          <Media
+            key={t.id}
+            seed={t.id}
+            src={"imageUrl" in t ? t.imageUrl : t.posterUrl}
+            rounded="rounded-none"
+            className="aspect-square"
+          />
         ))}
       </div>
     </div>

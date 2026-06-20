@@ -48,6 +48,7 @@ export function PostCard({ post }: { post: Post }) {
       <div className="relative px-3">
         <Media
           seed={post.id}
+          src={post.imageUrl}
           label={post.caption}
           rounded="rounded-2xl"
           className="aspect-square w-full"
@@ -108,6 +109,7 @@ export function PostCard({ post }: { post: Post }) {
         <div className="mx-4 mt-3 flex items-center gap-3 rounded-2xl border border-border bg-surface-muted p-2.5">
           <Media
             seed={post.taggedProduct.id}
+            src={post.taggedProduct.imageUrl}
             label={post.taggedProduct.title}
             className="h-14 w-14 shrink-0"
             rounded="rounded-[0.75rem]"

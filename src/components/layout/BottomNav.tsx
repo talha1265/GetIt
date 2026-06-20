@@ -29,21 +29,21 @@ export function BottomNav() {
               <Link
                 href={href}
                 aria-label={label}
-                className="relative flex flex-1 flex-col items-center justify-center gap-0.5"
+                className="relative flex flex-1 flex-col items-center justify-center gap-1"
               >
                 {center ? (
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[var(--shadow-card)]">
                     <Icon className="h-5 w-5" strokeWidth={2} />
                   </span>
                 ) : (
                   <span className="relative">
                     <Icon
                       className={cn(
-                        "h-[26px] w-[26px] transition",
-                        active ? "text-foreground" : "text-muted",
+                        "h-[25px] w-[25px] transition",
+                        active ? "text-accent" : "text-muted",
                       )}
-                      strokeWidth={active ? 2.4 : 1.8}
-                      fill={active && "cart" in flags && flags.cart ? "currentColor" : "none"}
+                      strokeWidth={active ? 2.2 : 1.8}
+                      fill={active ? "currentColor" : "none"}
                     />
                     {"cart" in flags && flags.cart && count > 0 && (
                       <span className="absolute -right-2 -top-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-like px-1 text-[10px] font-bold text-white ring-2 ring-surface">
@@ -52,6 +52,14 @@ export function BottomNav() {
                     )}
                   </span>
                 )}
+                <span
+                  className={cn(
+                    "text-[10px] font-medium leading-none",
+                    active && !center ? "text-accent" : "text-muted",
+                  )}
+                >
+                  {label}
+                </span>
               </Link>
             </li>
           );

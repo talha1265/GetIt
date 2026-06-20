@@ -51,6 +51,7 @@ export default function CartPage() {
           >
             <Media
               seed={line.productId}
+              src={line.imageUrl}
               label={line.title}
               className="h-20 w-20 shrink-0"
               rounded="rounded-[0.75rem]"

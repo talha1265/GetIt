@@ -25,6 +25,7 @@ export function ReelsRail({ reels }: { reels: Reel[] }) {
           >
             <Media
               seed={reel.id}
+              src={reel.posterUrl || reel.product.imageUrl}
               label={reel.caption}
               rounded="rounded-2xl"
               className="h-[230px] w-full"

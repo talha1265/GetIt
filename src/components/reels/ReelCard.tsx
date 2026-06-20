@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Heart,
   MessageCircle,
@@ -8,6 +8,8 @@ import {
   Music2,
   Send,
   Star,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Media } from "@/components/ui/Media";
@@ -49,19 +51,67 @@ function Action({
 
 export function ReelCard({ reel }: { reel: Reel }) {
   const [liked, setLiked] = useState(!!reel.liked);
+  const [muted, setMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const likeCount =
     reel.likes + (liked && !reel.liked ? 1 : 0) - (!liked && reel.liked ? 1 : 0);
 
+  // Play only while the reel is on screen.
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) el.play().catch(() => {});
+          else el.pause();
+        }
+      },
+      { threshold: 0.6 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.muted = muted;
+  }, [muted]);
+
   return (
     <section className="snap-item relative h-full w-full overflow-hidden bg-black">
-      {/* video poster (real video lands in Phase 3) */}
-      <Media
-        seed={reel.id}
-        label={reel.caption}
-        rounded="rounded-none"
-        className="absolute inset-0 h-full w-full"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/40" />
+      {reel.videoUrl ? (
+        <video
+          ref={videoRef}
+          src={reel.videoUrl}
+          poster={reel.posterUrl || undefined}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          onClick={() => setMuted((m) => !m)}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : (
+        <Media
+          seed={reel.id}
+          src={reel.posterUrl}
+          label={reel.caption}
+          rounded="rounded-none"
+          className="absolute inset-0 h-full w-full"
+        />
+      )}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/40" />
+
+      {/* mute toggle */}
+      {reel.videoUrl && (
+        <button
+          onClick={() => setMuted((m) => !m)}
+          aria-label={muted ? "Unmute" : "Mute"}
+          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md"
+        >
+          {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+        </button>
+      )}
 
       {/* right action rail */}
       <div className="absolute bottom-36 right-3 z-10 flex flex-col items-center gap-5">
@@ -117,6 +167,7 @@ export function ReelCard({ reel }: { reel: Reel }) {
         <div className="flex items-center gap-3 rounded-2xl bg-white/12 p-2.5 backdrop-blur-md">
           <Media
             seed={reel.product.id}
+            src={reel.product.imageUrl}
             label={reel.product.title}
             className="h-12 w-12 shrink-0"
             rounded="rounded-[0.75rem]"
