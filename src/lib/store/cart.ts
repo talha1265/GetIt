@@ -2,11 +2,17 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { CartLine, Product } from "@/lib/types";
+import type { CartLine, ItemSource, Product } from "@/lib/types";
+
+interface AddOptions {
+  qty?: number;
+  source?: ItemSource;
+  sourceId?: string;
+}
 
 interface CartState {
   lines: CartLine[];
-  addItem: (product: Product, qty?: number) => void;
+  addItem: (product: Product, opts?: AddOptions) => void;
   removeItem: (productId: string) => void;
   setQty: (productId: string, qty: number) => void;
   clear: () => void;
@@ -16,13 +22,22 @@ export const useCart = create<CartState>()(
   persist(
     (set) => ({
       lines: [],
-      addItem: (product, qty = 1) =>
+      addItem: (product, opts = {}) =>
         set((state) => {
+          const { qty = 1, source, sourceId } = opts;
           const existing = state.lines.find((l) => l.productId === product.id);
           if (existing) {
             return {
               lines: state.lines.map((l) =>
-                l.productId === product.id ? { ...l, qty: l.qty + qty } : l,
+                l.productId === product.id
+                  ? {
+                      ...l,
+                      qty: l.qty + qty,
+                      // Keep the first creator attribution unless it was a direct add.
+                      source: l.source && l.source !== "DIRECT" ? l.source : source,
+                      sourceId: l.source && l.source !== "DIRECT" ? l.sourceId : sourceId,
+                    }
+                  : l,
               ),
             };
           }
@@ -33,6 +48,8 @@ export const useCart = create<CartState>()(
             imageUrl: product.imageUrl,
             sellerName: product.seller.displayName,
             qty,
+            source: source ?? "DIRECT",
+            sourceId,
           };
           return { lines: [...state.lines, line] };
         }),

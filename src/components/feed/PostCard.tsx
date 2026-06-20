@@ -125,7 +125,11 @@ export function PostCard({ post }: { post: Post }) {
               5% cashback to {post.author.username}
             </p>
           </div>
-          <AddToCartButton product={post.taggedProduct} />
+          <AddToCartButton
+            product={post.taggedProduct}
+            source="POST"
+            sourceId={post.id}
+          />
         </div>
       )}
     </article>

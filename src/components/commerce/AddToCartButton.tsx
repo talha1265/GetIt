@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Check, Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/lib/store/cart";
-import type { Product } from "@/lib/types";
+import type { ItemSource, Product } from "@/lib/types";
 
 export function AddToCartButton({
   product,
@@ -12,12 +12,16 @@ export function AddToCartButton({
   size = "sm",
   fullWidth,
   label = "Add",
+  source = "DIRECT",
+  sourceId,
 }: {
   product: Product;
   variant?: "outline" | "primary" | "accent";
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
   label?: string;
+  source?: ItemSource;
+  sourceId?: string;
 }) {
   const addItem = useCart((s) => s.addItem);
   const [added, setAdded] = useState(false);
@@ -28,7 +32,7 @@ export function AddToCartButton({
       size={size}
       fullWidth={fullWidth}
       onClick={() => {
-        addItem(product);
+        addItem(product, { source, sourceId });
         setAdded(true);
         setTimeout(() => setAdded(false), 1400);
       }}

@@ -84,6 +84,8 @@ export interface Reel {
   liked?: boolean;
 }
 
+export type ItemSource = "DIRECT" | "POST" | "REEL";
+
 export interface CartLine {
   productId: string;
   title: string;
@@ -91,4 +93,7 @@ export interface CartLine {
   imageUrl: string;
   sellerName: string;
   qty: number;
+  /** Where the item was added from — drives 5% creator cashback attribution. */
+  source?: ItemSource;
+  sourceId?: string;
 }

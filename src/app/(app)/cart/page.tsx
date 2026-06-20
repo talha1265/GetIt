@@ -105,9 +105,11 @@ export default function CartPage() {
         <div className="flex items-center justify-between">
           <Badge tone="cashback">You&apos;ll earn {formatPrice(cashback)} cashback</Badge>
         </div>
-        <Button variant="buy" size="lg" fullWidth>
-          Checkout · {formatPrice(subtotal)}
-        </Button>
+        <Link href="/checkout">
+          <Button variant="buy" size="lg" fullWidth>
+            Checkout · {formatPrice(subtotal)}
+          </Button>
+        </Link>
         <p className="text-center text-[11px] text-muted">
           Secured by PayU · Delivered via ShipRocket
         </p>

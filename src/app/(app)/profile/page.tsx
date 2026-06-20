@@ -1,4 +1,5 @@
-import { BadgePercent, Grid3x3, Settings, Store } from "lucide-react";
+import Link from "next/link";
+import { BadgePercent, Grid3x3, Package, Settings, Store } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Media } from "@/components/ui/Media";
 import { Button } from "@/components/ui/Button";
@@ -53,9 +54,11 @@ export default function ProfilePage() {
       </div>
 
       <div className="flex gap-2 px-4 pt-3">
-        <Button variant="outline" size="md" fullWidth>
-          Edit profile
-        </Button>
+        <Link href="/orders" className="flex-1">
+          <Button variant="outline" size="md" fullWidth>
+            <Package className="h-4 w-4" /> Your orders
+          </Button>
+        </Link>
         <Button variant="primary" size="md" fullWidth>
           <Store className="h-4 w-4" /> Become a seller
         </Button>

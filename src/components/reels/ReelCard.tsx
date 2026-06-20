@@ -135,8 +135,16 @@ export function ReelCard({ reel }: { reel: Reel }) {
               size="sm"
               label="Cart"
               variant="outline"
+              source="REEL"
+              sourceId={reel.id}
             />
-            <BuyButton product={reel.product} size="sm" className="bg-white text-black" />
+            <BuyButton
+              product={reel.product}
+              size="sm"
+              className="bg-white text-black"
+              source="REEL"
+              sourceId={reel.id}
+            />
           </div>
         </div>
       </div>
