@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Category } from "@/lib/types";
 
 export function CategoryStrip({ categories }: { categories: Category[] }) {
@@ -5,8 +6,9 @@ export function CategoryStrip({ categories }: { categories: Category[] }) {
     <section className="py-3">
       <div className="no-scrollbar flex gap-3 overflow-x-auto px-4">
         {categories.map((c) => (
-          <button
+          <Link
             key={c.id}
+            href={`/search?category=${c.id}`}
             className="flex w-[64px] shrink-0 flex-col items-center gap-1.5"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-full border border-border bg-surface-muted text-2xl transition active:scale-95">
@@ -15,7 +17,7 @@ export function CategoryStrip({ categories }: { categories: Category[] }) {
             <span className="max-w-full truncate text-[11px] font-medium text-muted-strong">
               {c.name}
             </span>
-          </button>
+          </Link>
         ))}
       </div>
     </section>

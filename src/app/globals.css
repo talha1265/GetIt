@@ -94,9 +94,21 @@ body {
   display: none;
 }
 
-/* Instagram-style story ring */
+/* getIt story ring */
 .story-ring {
   background: var(--ring-gradient);
+}
+
+@keyframes story-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+.story-progress-fill {
+  animation: story-progress 5s linear forwards;
 }
 
 /* Reel vertical snap feed */

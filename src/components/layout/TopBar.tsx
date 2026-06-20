@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, Send } from "lucide-react";
+import { Bell, Search, Send } from "lucide-react";
 
 export function TopBar() {
   return (
@@ -16,6 +16,13 @@ export function TopBar() {
           </span>
         </Link>
         <div className="flex items-center gap-1">
+          <Link
+            href="/search"
+            aria-label="Search"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-surface-muted"
+          >
+            <Search className="h-[21px] w-[21px]" strokeWidth={1.8} />
+          </Link>
           <button
             aria-label="Notifications"
             className="relative inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-surface-muted"
