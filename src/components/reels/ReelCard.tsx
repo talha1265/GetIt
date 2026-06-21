@@ -18,6 +18,8 @@ import { Price } from "@/components/ui/Price";
 import { Button } from "@/components/ui/Button";
 import { AddToCartButton } from "@/components/commerce/AddToCartButton";
 import { BuyButton } from "@/components/commerce/BuyButton";
+import { CommentSheet } from "@/components/social/CommentSheet";
+import { useSocial } from "@/lib/store/social";
 import type { Reel } from "@/lib/types";
 import { cn, formatCount } from "@/lib/utils";
 
@@ -51,11 +53,16 @@ function Action({
 }
 
 export function ReelCard({ reel }: { reel: Reel }) {
-  const [liked, setLiked] = useState(!!reel.liked);
+  const commentKey = `reel:${reel.id}`;
+  const liked = useSocial((s) => !!s.likedReels[reel.id]);
+  const following = useSocial((s) => !!s.follows[reel.author.username]);
+  const commentExtra = useSocial((s) => s.comments[commentKey]?.length ?? 0);
+  const toggleLike = useSocial((s) => s.toggleLikeReel);
+  const toggleFollow = useSocial((s) => s.toggleFollow);
   const [muted, setMuted] = useState(true);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const likeCount =
-    reel.likes + (liked && !reel.liked ? 1 : 0) - (!liked && reel.liked ? 1 : 0);
+  const likeCount = reel.likes + (liked ? 1 : 0);
 
   // Play only while the reel is on screen.
   useEffect(() => {
@@ -126,11 +133,12 @@ export function ReelCard({ reel }: { reel: Reel }) {
           }
           label={formatCount(likeCount)}
           active={liked}
-          onClick={() => setLiked((v) => !v)}
+          onClick={() => toggleLike(reel.id)}
         />
         <Action
           icon={<MessageCircle className="h-6 w-6 -scale-x-100" strokeWidth={1.8} />}
-          label={formatCount(reel.comments)}
+          label={formatCount(reel.comments + commentExtra)}
+          onClick={() => setSheetOpen(true)}
         />
         <Action
           icon={<Star className="h-6 w-6" strokeWidth={1.8} />}
@@ -153,9 +161,13 @@ export function ReelCard({ reel }: { reel: Reel }) {
           <Button
             variant="outline"
             size="sm"
-            className="border-white/70 bg-transparent text-white hover:bg-white/10"
+            onClick={() => toggleFollow(reel.author.username)}
+            className={cn(
+              "border-white/70 bg-transparent text-white hover:bg-white/10",
+              following && "border-white/30 text-white/70",
+            )}
           >
-            Follow
+            {following ? "Following" : "Follow"}
           </Button>
         </div>
         <p className="line-clamp-2 pr-16 text-sm leading-snug">{reel.caption}</p>
@@ -205,6 +217,8 @@ export function ReelCard({ reel }: { reel: Reel }) {
           </div>
         </div>
       </div>
+
+      <CommentSheet open={sheetOpen} onClose={() => setSheetOpen(false)} commentKey={commentKey} />
     </section>
   );
 }

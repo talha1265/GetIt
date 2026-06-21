@@ -14,13 +14,20 @@ import { Media } from "@/components/ui/Media";
 import { Badge } from "@/components/ui/Badge";
 import { Price } from "@/components/ui/Price";
 import { AddToCartButton } from "@/components/commerce/AddToCartButton";
+import { CommentSheet } from "@/components/social/CommentSheet";
+import { useSocial } from "@/lib/store/social";
 import type { Post } from "@/lib/types";
 import { cn, formatCount } from "@/lib/utils";
 
 export function PostCard({ post }: { post: Post }) {
-  const [liked, setLiked] = useState(!!post.liked);
-  const [saved, setSaved] = useState(false);
-  const likeCount = post.likes + (liked && !post.liked ? 1 : 0) - (!liked && post.liked ? 1 : 0);
+  const commentKey = `post:${post.id}`;
+  const liked = useSocial((s) => !!s.likedPosts[post.id]);
+  const saved = useSocial((s) => !!s.saved[post.id]);
+  const commentExtra = useSocial((s) => s.comments[commentKey]?.length ?? 0);
+  const toggleLike = useSocial((s) => s.toggleLikePost);
+  const toggleSave = useSocial((s) => s.toggleSave);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const likeCount = post.likes + (liked ? 1 : 0);
 
   return (
     <article className="mx-3 mb-3 overflow-hidden rounded-3xl border border-border bg-surface pb-3 shadow-[var(--shadow-card)]">
@@ -65,7 +72,7 @@ export function PostCard({ post }: { post: Post }) {
       <div className="flex items-center gap-4 px-4 pt-3">
         <button
           aria-label="Like"
-          onClick={() => setLiked((v) => !v)}
+          onClick={() => toggleLike(post.id)}
           className="transition active:scale-90"
         >
           <Heart
@@ -74,7 +81,7 @@ export function PostCard({ post }: { post: Post }) {
             strokeWidth={1.8}
           />
         </button>
-        <button aria-label="Comment">
+        <button aria-label="Comment" onClick={() => setSheetOpen(true)}>
           <MessageCircle className="h-7 w-7 -scale-x-100" strokeWidth={1.8} />
         </button>
         <button aria-label="Share">
@@ -82,7 +89,7 @@ export function PostCard({ post }: { post: Post }) {
         </button>
         <button
           aria-label="Save"
-          onClick={() => setSaved((v) => !v)}
+          onClick={() => toggleSave(post.id)}
           className="ml-auto"
         >
           <Bookmark
@@ -100,8 +107,8 @@ export function PostCard({ post }: { post: Post }) {
           <span className="font-semibold">{post.author.username}</span>{" "}
           {post.caption}
         </p>
-        <button className="mt-1 text-sm text-muted">
-          View all {formatCount(post.comments)} comments
+        <button onClick={() => setSheetOpen(true)} className="mt-1 text-sm text-muted">
+          View all {formatCount(post.comments + commentExtra)} comments
         </button>
       </div>
 
@@ -140,6 +147,8 @@ export function PostCard({ post }: { post: Post }) {
           />
         </div>
       )}
+
+      <CommentSheet open={sheetOpen} onClose={() => setSheetOpen(false)} commentKey={commentKey} />
     </article>
   );
 }

@@ -23,13 +23,14 @@ export function TopBar() {
           >
             <Search className="h-[21px] w-[21px]" strokeWidth={1.8} />
           </Link>
-          <button
+          <Link
+            href="/notifications"
             aria-label="Notifications"
             className="relative inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-surface-muted"
           >
             <Bell className="h-[22px] w-[22px]" strokeWidth={1.8} />
             <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-like ring-2 ring-surface" />
-          </button>
+          </Link>
           <button
             aria-label="Messages"
             className="inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-surface-muted"
