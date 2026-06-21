@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import { Send, X } from "lucide-react";
-import { useSocial } from "@/lib/store/social";
+import { useSocial, type Comment } from "@/lib/store/social";
 import { relativeTime } from "@/lib/utils";
+
+// Stable reference so the store selector doesn't return a new array each render.
+const EMPTY: Comment[] = [];
 
 export function CommentSheet({
   open,
@@ -14,7 +17,7 @@ export function CommentSheet({
   onClose: () => void;
   commentKey: string;
 }) {
-  const comments = useSocial((s) => s.comments[commentKey] ?? []);
+  const comments = useSocial((s) => s.comments[commentKey] ?? EMPTY);
   const addComment = useSocial((s) => s.addComment);
   const [text, setText] = useState("");
 
