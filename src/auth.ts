@@ -29,25 +29,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!result.ok) return null;
 
         if (hasDatabase) {
-          const user = await prisma.user.upsert({
-            where: { phone: result.phone },
-            update: {},
-            create: {
-              phone: result.phone,
-              username: await uniqueUsername(result.phone),
-              displayName: "New User",
-            },
-          });
-          return {
-            id: user.id,
-            name: user.displayName,
-            phone: user.phone,
-            username: user.username,
-            role: user.role,
-          };
+          try {
+            const user = await prisma.user.upsert({
+              where: { phone: result.phone },
+              update: {},
+              create: {
+                phone: result.phone,
+                username: await uniqueUsername(result.phone),
+                displayName: "New User",
+              },
+            });
+            return {
+              id: user.id,
+              name: user.displayName,
+              phone: user.phone,
+              username: user.username,
+              role: user.role,
+            };
+          } catch (err) {
+            // DB unreachable — degrade to an ephemeral session so login still works.
+            console.warn("Auth DB upsert failed; using ephemeral session.", (err as Error).message);
+          }
         }
 
-        // No DB connected (dev): issue an ephemeral session keyed by phone.
+        // No (or unreachable) DB: issue an ephemeral session keyed by phone.
         return {
           id: result.phone,
           name: "Guest",

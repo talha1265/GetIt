@@ -10,6 +10,11 @@ const RESEND_WINDOW_MS = 30_000; // min gap between sends per phone
 
 const SECRET = process.env.AUTH_SECRET ?? "dev-only-insecure-secret";
 
+// Demo account: lets you sign in instantly without SMS. REMOVE before a real
+// public launch (it's a fixed-credential backdoor).
+const DEMO_PHONE = "+911234567891";
+const DEMO_OTP = "123456";
+
 function generateCode(): string {
   // 6-digit, leading zeros allowed
   const n = Math.floor(Math.random() * 10 ** CODE_LENGTH);
@@ -51,6 +56,9 @@ export async function requestOtp(rawPhone: string): Promise<RequestResult> {
   const phone = normalizePhone(rawPhone);
   if (!phone) return { ok: false, error: "Enter a valid 10-digit mobile number." };
 
+  // Demo account — skip storage/SMS and return the fixed code.
+  if (phone === DEMO_PHONE) return { ok: true, devCode: DEMO_OTP };
+
   const code = generateCode();
   const codeHash = hashCode(phone, code);
   const expiresAt = Date.now() + TTL_MS;
@@ -86,6 +94,10 @@ export type VerifyResult =
 export async function verifyOtp(rawPhone: string, code: string): Promise<VerifyResult> {
   const phone = normalizePhone(rawPhone);
   if (!phone) return { ok: false, error: "Invalid phone number." };
+
+  // Demo account bypass.
+  if (phone === DEMO_PHONE && code.trim() === DEMO_OTP) return { ok: true, phone };
+
   const incoming = hashCode(phone, code.trim());
 
   if (hasDatabase) {

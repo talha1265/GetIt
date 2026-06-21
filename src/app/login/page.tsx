@@ -40,6 +40,28 @@ export default function LoginPage() {
     }
   }
 
+  async function demoLogin() {
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await signIn("otp", {
+        phone: "1234567891",
+        code: "123456",
+        redirect: false,
+      });
+      if (res?.error) {
+        setError("Demo login failed. Try again.");
+        return;
+      }
+      router.push("/");
+      router.refresh();
+    } catch {
+      setError("Could not sign in. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function verifyCode() {
     setError(null);
     setLoading(true);
@@ -107,6 +129,25 @@ export default function LoginPage() {
           </Button>
           <p className="text-center text-xs text-muted">
             We&apos;ll text you a one-time code. Standard rates may apply.
+          </p>
+
+          <div className="flex items-center gap-3 py-1">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-[11px] text-muted">or</span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            fullWidth
+            disabled={loading}
+            onClick={demoLogin}
+          >
+            Continue with demo account
+          </Button>
+          <p className="text-center text-[11px] text-muted">
+            Demo: 1234567891 · code 123456
           </p>
         </form>
       ) : (
